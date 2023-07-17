@@ -36,6 +36,8 @@ services:
       KEYCLOAK_ADMIN: $KEYCLOAK_ADMIN
       KEYCLOAK_ADMIN_PASSWORD: $KEYCLOAK_ADMIN_PASSWORD
       KC_HEALTH_ENABLED: true
+    volumes:
+      - ./realms:/opt/keycloak/data/import
     ports:
       - 8080:8080
       - 8443:8443
@@ -43,4 +45,4 @@ services:
       postgres:
         condition: service_healthy
     command:
-      - start-dev
+      - start-dev --import-realm
