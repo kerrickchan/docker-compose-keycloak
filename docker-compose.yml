@@ -37,7 +37,6 @@ services:
       KEYCLOAK_ADMIN: $KEYCLOAK_ADMIN
       KEYCLOAK_ADMIN_PASSWORD: $KEYCLOAK_ADMIN_PASSWORD
       KC_HEALTH_ENABLED: true
-      KC_HOSTNAME_STRICT: false
     volumes:
       - ./realms:/opt/keycloak/data/import
     ports:
