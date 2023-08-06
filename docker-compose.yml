@@ -1,12 +1,12 @@
 version: '3'
 
 volumes:
-  db_storage:
+  keycloak-data:
 
 services:
-  postgres:
+  keycloak-postgres:
     image: postgres:15.3-alpine
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -14,8 +14,8 @@ services:
       - POSTGRES_NON_ROOT_USER
       - POSTGRES_NON_ROOT_PASSWORD
     volumes:
-      - db_storage:/var/lib/postgresql/data
-      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+      - keycloak-data:/var/lib/postgresql/data
+      - ./init/keycloak/data:/docker-entrypoint-initdb.d/:ro
     healthcheck:
       test:
         [
@@ -26,24 +26,24 @@ services:
       timeout: 5s
       retries: 10
   keycloak:
-    build: .
-    restart: always
+    image: quay.io/keycloak/keycloak:22.0.0
+    restart: unless-stopped
     environment:
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
       KC_DB_USERNAME: $POSTGRES_USER
       KC_DB_PASSWORD: $POSTGRES_PASSWORD
-      DB_SCHEMA: public
+      DB_SCHEMA: $POSTGRES_DB_SCHEMA
+      KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: $KEYCLOAK_ADMIN
       KEYCLOAK_ADMIN_PASSWORD: $KEYCLOAK_ADMIN_PASSWORD
-      KC_HEALTH_ENABLED: true
     volumes:
-      - ./realms:/opt/keycloak/data/import
+      - ./init/keycloak/realms:/opt/keycloak/data/import:ro
     ports:
       - 8080:8080
       - 8443:8443
     depends_on:
-      postgres:
+      keycloak-postgres:
         condition: service_healthy
     command:
       - start-dev --import-realm
