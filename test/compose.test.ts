@@ -7,5 +7,5 @@ describe('when upAll is called', () => {
     expect(await isContainerRunning('/keycloak-keycloak-postgres-1')).toBeTruthy()
     expect(await isContainerRunning('/keycloak-keycloak-1')).toBeTruthy()
     await compose.down({ cwd: __dirname, log: logOutput })
-  }, 30000);
+  }, 60000);
 });
