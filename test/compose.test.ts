@@ -1,5 +1,5 @@
 import { v2 as compose } from 'docker-compose';
-import { logOutput, isContainerRunning } from './helper';
+import { logOutput, isContainerRunning } from '@kerrickdev/docker-util';
 
 describe('when upAll is called', () => {
   it('should successful run', async () => {
